@@ -1,0 +1,53 @@
+name: Save PDF
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  savepdf:
+    name: Build PDF
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      REPO_OWNER: ${{ github.repository_owner }}
+      REPO_NAME: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # all branches and tags
+      - name: Set git identity
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Install dependencies
+        run: |
+          pip install pdfkit
+          sudo apt-get install wkhtmltopdf
+
+      # change branch to pdf. if pdf branch exists, delete it and create a new one
+      - name: Checkout pdf branch
+        run: |
+          if git show-ref --verify --quiet refs/heads/pdf; then
+            git branch -D pdf2
+          fi
+          git checkout -b pdf2
+
+      - name: Write Python script
+        run: |
+          echo "import pdfkit" > convert.py
+          echo "pdfkit.from_url('https://$REPO_OWNER.github.io/$REPO_NAME/md.html?src=https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/main/index.md', '$REPO_OWNER\_CV.pdf')" >> convert.py
+
+      - name: Convert to PDF
+        run: |
+          python convert.py
+
+      - name: Commit
+        run: |
+          git add $REPO_OWNER\_CV.pdf
+          git commit -m "Update CV"
+
+      - name: Push
+        run: |
+          git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}
+          git push origin pdf --force
