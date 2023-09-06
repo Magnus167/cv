@@ -35,9 +35,9 @@ jobs:
 
       - name: Write Python script
         run: |
-          echo "import pdfkit" > convert.py
-          echo "repoOwner, repoName = '$REPO_NAME'.split('/')" >> convert.py
-          echo "pdfkit.from_url(f'https://$REPO_OWNER.github.io/{repoName}/md.html?src=https://raw.githubusercontent.com/{repoOwner}/{repoName}/main/index.md', '$REPO_OWNER\_CV.pdf')" >> convert.py
+          echo "import pdfkit, os" > convert.py
+          echo "repoOwner, repoName = os.getenv('REPO_NAME').split('/')" >> convert.py
+          echo "pdfkit.from_url(f'https://.github.io/{repoName}/md.html?src=https://raw.githubusercontent.com/{repoOwner}/{repoName}/main/index.md', f'{repoOwner}_CV.pdf')" >> convert.py
 
       - name: Convert to PDF
         run: |
@@ -45,7 +45,7 @@ jobs:
 
       - name: Commit
         run: |
-          git add $REPO_OWNER\_CV.pdf
+          git add $REPO_OWNER_CV.pdf
           git commit -m "Update CV"
 
       - name: Push
