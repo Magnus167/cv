@@ -12,6 +12,7 @@ jobs:
       GITHUB_REPOSITORY: ${{ github.repository }}
       REPO_OWNER: ${{ github.repository_owner }}
       REPO_NAME: ${{ github.repository }}
+      OUTPUT_BRANCH: pdf2
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,10 +29,10 @@ jobs:
       # change branch to pdf. if pdf branch exists, delete it and create a new one
       - name: Checkout pdf branch
         run: |
-          if git show-ref --verify --quiet refs/heads/pdf2; then
-            git branch -D pdf2
+          if git show-ref --verify --quiet refs/heads/$OUTPUT_BRANCH; then
+            git branch -D $OUTPUT_BRANCH
           fi
-          git checkout -b pdf2
+          git checkout -b $OUTPUT_BRANCH
 
       - name: Write Python script
         run: |
@@ -51,4 +52,4 @@ jobs:
       - name: Push
         run: |
           git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}
-          git push origin pdf --force
+          git push origin $OUTPUT_BRANCH --force
