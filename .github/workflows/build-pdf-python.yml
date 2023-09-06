@@ -45,7 +45,7 @@ jobs:
 
       - name: Commit
         run: |
-          git add $REPO_OWNER_CV.pdf
+          git add $REPO_OWNER\_CV.pdf
           git commit -m "Update CV"
 
       - name: Push
