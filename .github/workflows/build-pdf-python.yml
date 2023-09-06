@@ -28,7 +28,7 @@ jobs:
       # change branch to pdf. if pdf branch exists, delete it and create a new one
       - name: Checkout pdf branch
         run: |
-          if git show-ref --verify --quiet refs/heads/pdf; then
+          if git show-ref --verify --quiet refs/heads/pdf2; then
             git branch -D pdf2
           fi
           git checkout -b pdf2
